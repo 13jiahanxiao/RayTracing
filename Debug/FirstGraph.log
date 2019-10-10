@@ -1,0 +1,8 @@
+﻿  Main.cpp
+D:\Graph\FirstGraph\Main.cpp(47,10): warning C4244:  “初始化”: 从“double”转换到“float”，可能丢失数据
+D:\Graph\FirstGraph\Main.cpp(127,10): warning C4244:  “初始化”: 从“double”转换到“float”，可能丢失数据
+D:\Graph\FirstGraph\Main.cpp(174,55): warning C4305:  “参数”: 从“double”到“float”截断
+D:\Graph\FirstGraph\Main.cpp(193,11): warning C4244:  “初始化”: 从“float”转换到“int”，可能丢失数据
+D:\Graph\FirstGraph\Main.cpp(194,11): warning C4244:  “初始化”: 从“float”转换到“int”，可能丢失数据
+D:\Graph\FirstGraph\Main.cpp(195,11): warning C4244:  “初始化”: 从“float”转换到“int”，可能丢失数据
+  FirstGraph.vcxproj -> D:\Graph\FirstGraph\Debug\FirstGraph.exe
