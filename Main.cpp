@@ -1,5 +1,6 @@
 #include <iostream>
 #include<fstream>
+#include<cmath>
 
 #pragma region Vector3
 
@@ -132,7 +133,7 @@ inline Vec3& Vec3::operator/=(const float t) {
 	return *this;
 }
 
-inline Vec3 unitVector(Vec3 v) {
+inline Vec3 UnitVector(Vec3 v) {
 	return v / v.Length();
 }
 #pragma endregion
@@ -146,7 +147,7 @@ public:
 	Ray(const Vec3& a, const Vec3& b) { A = a; B = b; }
 	Vec3 Origin() const{ return A; }
 	Vec3 Direction() const{ return B; }
-	Vec3 PointAtParameter(float t) { return A + t * B; }
+	Vec3 PointAtParameter(float t)const { return A + t * B; }
 private:
 	Vec3 A;
 	Vec3 B;
@@ -154,24 +155,90 @@ private:
 
 #pragma endregion
 
-bool HitSphere(const Vec3& origin, float radius ,const Ray& r) 
+struct  HitRecord
 {
-	Vec3 oc = r.Origin() - origin;
+	float t;
+	Vec3 p;
+	Vec3 normal;
+};
+class Hittable 
+{
+public :
+	virtual bool Hit(const Ray& r, float min, float max, HitRecord& hitRecord) const = 0;
+};
+
+class Sphere :public Hittable 
+{
+public:
+	Sphere() {};
+	Sphere(Vec3 cen, float t) { center = cen; radius = t; };
+	virtual bool Hit(const Ray& r, float min, float max, HitRecord& hitRecord) const;
+	Vec3 center;
+	float radius;
+};
+
+bool Sphere::Hit(const Ray& r, float min, float max, HitRecord& hitRecord) const
+{
+	Vec3 oc = r.Origin() - center;
 	float a = dot(r.Direction(), r.Direction());
 	float b = 2.0f * dot(r.Direction(), oc);
 	float c = dot(oc, oc) - radius*radius;
 	float discriminant = b * b - 4 * a * c;
-	return (discriminant > 0);
+	if (discriminant > 0) {
+		float temp = (-b - sqrt(discriminant)) / (2*a);
+		if (temp < max && temp > min) {
+			hitRecord.t = temp;
+			hitRecord.p = r.PointAtParameter(hitRecord.t);
+			hitRecord.normal = (hitRecord.p - center) / radius;
+			return true;
+		}
+		temp = (-b + sqrt(discriminant)) / (2*a);
+		if (temp < max && temp > min) {
+			hitRecord.t = temp;
+			hitRecord.p = r.PointAtParameter(hitRecord.t);
+			hitRecord.normal = (hitRecord.p - center) / radius;
+			return true;
+		}
+	}
+	return false;
 }
 
-Vec3 Color(const Ray& r) 
+class HittableList :public Hittable 
 {
-	if (HitSphere(Vec3(0, 0, -3), 2, r)) {
-		return Vec3(1, 0, 0);
+public:
+	HittableList() {};
+	HittableList(Hittable** l, int s) { list = l; size = s; };
+	virtual bool Hit(const Ray& r, float min, float max, HitRecord& hitRecord)const;
+	Hittable** list;
+	int size;
+};
+bool HittableList::Hit(const Ray& r, float min, float max, HitRecord& hitRecord)const 
+{
+	HitRecord tempRecord=hitRecord;
+	bool HitAnything=false;
+	double closeSoFar = max;
+	for (int i = 0; i < size;i++) {
+		if (list[i]->Hit(r, min, closeSoFar, tempRecord)) {
+			HitAnything = true;
+			closeSoFar = tempRecord.t;
+			hitRecord = tempRecord;
+		}
 	}
-	Vec3 unitDirection = unitVector(r.Direction());
-	float t = 0.5f * (unitDirection.y() + 1);
-	return (1 - t) * Vec3(1, 1, 1) + t * Vec3(0.5, 0.7, 1);
+	return HitAnything;
+
+}
+
+Vec3 Color(const Ray& r, Hittable * world) 
+{
+	HitRecord temp;
+	if (world->Hit(r, 0.0, FLT_MAX, temp)) {
+		return 0.5 * Vec3(temp.normal.x() + 1, temp.normal.y() + 1, temp.normal.z() + 1);
+	}
+	else {
+		Vec3 unit_direction = UnitVector(r.Direction());
+		float t = 0.5 * (unit_direction.y() + 1.0);
+		return (1.0 - t) * Vec3(1.0, 1.0, 1.0) + t * Vec3(0.5, 0.7, 1.0);
+	}
 }
 
 int main() 
@@ -182,6 +249,11 @@ int main()
 	Vec3 horizontal(16, 0, 0);
 	Vec3 vertical(0, 9, 0);
 	Vec3 origin(0, 0, 0);
+
+	Hittable* list[2];
+	list[0] = new Sphere(Vec3(0, 0, -3), 2.0f);
+	list[1] = new Sphere(Vec3(0, -100, -3), 98);
+	Hittable* world = new HittableList(list, 2);
 	std::ofstream Outfile("MyTest.txt", std::ios::out);
 	Outfile << "P3\n" << nx << " " << ny << "\n255\n";
 	for(int j=ny-1;j>=0;j--)
@@ -189,7 +261,8 @@ int main()
 			float u= (float)i / (float)nx;
 			float v= (float)j / (float)ny;
 			Ray r(origin, lowerLeftCorner + u * horizontal + v * vertical);
-			Vec3 color= Color(r);
+			//Vec3 p = r.PointAtParameter(2);
+			Vec3 color=Color(r, world);
 			int ir = (int)255.99 * color[0];
 			int ig = (int)255.99 * color[1];
 			int ib = (int)255.99 * color[2];
