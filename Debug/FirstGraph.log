@@ -1,11 +1,19 @@
 ﻿  Main.cpp
-D:\Graph\FirstGraph\Main.cpp(48,10): warning C4244:  “初始化”: 从“double”转换到“float”，可能丢失数据
-D:\Graph\FirstGraph\Main.cpp(128,10): warning C4244:  “初始化”: 从“double”转换到“float”，可能丢失数据
-D:\Graph\FirstGraph\Main.cpp(221,28): warning C4244:  “参数”: 从“double”转换到“float”，可能丢失数据
-D:\Graph\FirstGraph\Main.cpp(239,11): warning C4244:  “初始化”: 从“double”转换到“float”，可能丢失数据
-D:\Graph\FirstGraph\Main.cpp(240,15): warning C4244:  “参数”: 从“double”转换到“float”，可能丢失数据
-D:\Graph\FirstGraph\Main.cpp(240,66): warning C4305:  “参数”: 从“double”到“float”截断
-D:\Graph\FirstGraph\Main.cpp(266,11): warning C4244:  “初始化”: 从“float”转换到“int”，可能丢失数据
-D:\Graph\FirstGraph\Main.cpp(267,11): warning C4244:  “初始化”: 从“float”转换到“int”，可能丢失数据
-D:\Graph\FirstGraph\Main.cpp(268,11): warning C4244:  “初始化”: 从“float”转换到“int”，可能丢失数据
+D:\Graph\FirstGraph\vector.h(46,10): warning C4244:  “初始化”: 从“double”转换到“float”，可能丢失数据
+D:\Graph\FirstGraph\vector.h(126,10): warning C4244:  “初始化”: 从“double”转换到“float”，可能丢失数据
+D:\Graph\FirstGraph\material.h(24,61): warning C4244:  “参数”: 从“double”转换到“float”，可能丢失数据
+D:\Graph\FirstGraph\material.h(24,45): warning C4244:  “参数”: 从“double”转换到“float”，可能丢失数据
+D:\Graph\FirstGraph\material.h(24,29): warning C4244:  “参数”: 从“double”转换到“float”，可能丢失数据
+D:\Graph\FirstGraph\sphere.h(60,28): warning C4244:  “参数”: 从“double”转换到“float”，可能丢失数据
+D:\Graph\FirstGraph\Main.cpp(14,5): warning C4305:  “参数”: 从“double”到“float”截断
+D:\Graph\FirstGraph\Main.cpp(29,11): warning C4244:  “初始化”: 从“double”转换到“float”，可能丢失数据
+D:\Graph\FirstGraph\Main.cpp(30,15): warning C4244:  “参数”: 从“double”转换到“float”，可能丢失数据
+D:\Graph\FirstGraph\Main.cpp(30,66): warning C4305:  “参数”: 从“double”到“float”截断
+D:\Graph\FirstGraph\Main.cpp(42,78): warning C4305:  “参数”: 从“double”到“float”截断
+D:\Graph\FirstGraph\Main.cpp(43,77): warning C4305:  “参数”: 从“double”到“float”截断
+D:\Graph\FirstGraph\Main.cpp(44,73): warning C4305:  “参数”: 从“double”到“float”截断
+D:\Graph\FirstGraph\Main.cpp(45,74): warning C4305:  “参数”: 从“double”到“float”截断
+D:\Graph\FirstGraph\Main.cpp(61,11): warning C4244:  “初始化”: 从“float”转换到“int”，可能丢失数据
+D:\Graph\FirstGraph\Main.cpp(62,11): warning C4244:  “初始化”: 从“float”转换到“int”，可能丢失数据
+D:\Graph\FirstGraph\Main.cpp(63,11): warning C4244:  “初始化”: 从“float”转换到“int”，可能丢失数据
   FirstGraph.vcxproj -> D:\Graph\FirstGraph\Debug\FirstGraph.exe
