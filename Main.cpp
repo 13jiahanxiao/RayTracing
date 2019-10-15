@@ -8,6 +8,44 @@
 #include"sphere.h"
 
 
+Hittable* randomScene() {
+	int n = 20;
+	Hittable** list = new Hittable * [n + 1];
+	list[0] = new Sphere(Vec3(0, -1000, 0), 1000, new Lambertian(Vec3(0.5, 0.5, 0.5)));
+	int i = 1;
+	for (int a = -3; a <3; a+=2) {
+		for (int b = -3; b < 3; b+=2) {
+			float chooseMat = RandomDouble();
+			Vec3 center(a + 0.9 * RandomDouble(), 0.2, b + 0.9 * RandomDouble());
+			if ((center - Vec3(4, 0.2, 0)).Length() > 0.9) {
+				if (chooseMat < 0.8) {  // diffuse
+					list[i++] = new Sphere(center, 0.2,
+						new Lambertian(Vec3(RandomDouble() * RandomDouble(),
+							RandomDouble() * RandomDouble(),
+							RandomDouble() * RandomDouble())
+						)
+					);
+				}
+				else if (chooseMat < 0.95) { // metal
+					list[i++] = new Sphere(center, 0.2,
+						new Metal(Vec3(0.5 * (1 + RandomDouble()),
+							0.5 * (1 + RandomDouble()),
+							0.5 * (1 + RandomDouble())),
+							0.5 * RandomDouble()));
+				}
+				else {  // glass
+					list[i++] = new Sphere(center, 0.2, new Dielectric(1.5));
+				}
+			}
+		}
+	}
+
+	list[i++] = new Sphere(Vec3(0, 1, 0), 1.0, new Dielectric(1.5));
+	list[i++] = new Sphere(Vec3(-4, 1, 0), 1.0, new Lambertian(Vec3(0.4, 0.2, 0.1)));
+	list[i++] = new Sphere(Vec3(4, 1, 0), 1.0, new Metal(Vec3(0.7, 0.6, 0.5), 0.0));
+	return new HittableList(list, i);
+}
+
 Vec3 Color(const Ray& r, Hittable* world, int depth)
 {
 	HitRecord temp;
@@ -33,17 +71,25 @@ Vec3 Color(const Ray& r, Hittable* world, int depth)
 
 int main()
 {
-	int nx = 1280;
-	int ny = 720;
+	int nx = 800;
+	int ny = 400;
 	int ns = 100;
-	Camera cam;
+	Vec3 lookfrom(3, 3, 2);
+	Vec3 lookat(0, 0, -1);
+	float distToFocus = (lookfrom - lookat).Length();
+	float aperture = 2.0;
 
-	Hittable* list[4];
-	list[0] = new Sphere(Vec3(0, 0, -3), 2.0f, new Lambertian(Vec3(0.8, 0.3, 0.3)));
-	list[1] = new Sphere(Vec3(0, -100, -3), 98, new Lambertian(Vec3(0.8, 0.8, 0)));
-	list[2] = new Sphere(Vec3(4, 0, -3), 2.0f, new Metal(Vec3(0.8, 0.6, 0.2)));
-	list[3] = new Sphere(Vec3(-4, 0, -3), 2.0f, new Metal(Vec3(0.8, 0.8, 0.8)));
-	Hittable* world = new HittableList(list, 4);
+	Camera cam(lookfrom, lookat, Vec3(0, 1, 0), 20,
+		float(nx) / float(ny), aperture, distToFocus);
+
+	/*Hittable* list[5];
+	list[0] = new Sphere(Vec3(0, 0, -1), 0.5, new Lambertian(Vec3(0.1, 0.2, 0.5)));
+	list[1] = new Sphere(Vec3(0, -100.5, -1), 100, new Lambertian(Vec3(0.8, 0.8, 0.0)));
+	list[2] = new Sphere(Vec3(1, 0, -1), 0.5, new Metal(Vec3(0.8, 0.6, 0.2), 0.0));
+	list[3] = new Sphere(Vec3(-1, 0, -1), 0.5, new Dielectric(1.5));
+	list[4] = new Sphere(Vec3(-1, 0, -1), -0.45, new Dielectric(1.5));
+	Hittable* world = new HittableList(list, 5);*/
+	Hittable* world = randomScene();
 	std::ofstream Outfile("MyTest.txt", std::ios::out);
 	Outfile << "P3\n" << nx << " " << ny << "\n255\n";
 	for (int j = ny - 1; j >= 0; j--)
@@ -63,4 +109,5 @@ int main()
 			int ib = (int)255.99 * color[2];
 			Outfile << ir << " " << ig << " " << ib << "\n";
 		}
+	Outfile.close();
 }

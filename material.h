@@ -4,27 +4,7 @@
 #include "vector.h"
 #include "ray.h"
 #include"hittable.h"
-
-#include <random>
-#include <functional>
-
-
-double RandomDouble()
-{
-	static std::uniform_real_distribution<double> distribution(0, 1);
-	static std::mt19937 generator;
-	static std::function<double()> randGenerator = std::bind(distribution, generator);
-	return randGenerator();
-}
-
-Vec3 RandomFlect()
-{
-	Vec3 p;
-	do {
-		p = 2.0* Vec3(RandomDouble(), RandomDouble(), RandomDouble()) - Vec3(1, 1, 1);
-	} while (p.SquaredLength() >= 1);
-	return p;
-}
+#include "random.h"
 
 bool Refract(const Vec3& v, const Vec3& n, float ratio, Vec3& refracted) {
 	Vec3 uv = UnitVector(v);
@@ -72,7 +52,7 @@ public:
 class Metal :public Material
 {
 public:
-	Metal(const Vec3& a,float t) :albedo(a) { if (f < 1) fuzz = f; else fuzz = 1; }
+	Metal(const Vec3& a,float f) :albedo(a) { if (f < 1) fuzz = f; else fuzz = 1; }
 	virtual bool Scatter(const Ray& in, const HitRecord& record, Vec3& attenuation, Ray& scatter) const
 	{
 		Vec3 reflect = Reflect(UnitVector(in.Direction()), record.normal);
@@ -84,10 +64,10 @@ public:
 	float fuzz;
 };
 
-class dielectric : public Material {
+class Dielectric : public Material {
 public:
-	dielectric(float ri) : refIdx(ri) {}
-	virtual bool scatter(const Ray& r_in, const HitRecord& rec,
+	Dielectric(float ri) : refIdx(ri) {}
+	virtual bool Scatter(const Ray& r_in, const HitRecord& rec,
 		Vec3& attenuation, Ray& scattered) const {
 		Vec3 outwardNormal;
 		Vec3 reflected = Reflect(r_in.Direction(), rec.normal);

@@ -1,19 +1,21 @@
 ﻿  Main.cpp
-D:\Graph\FirstGraph\vector.h(46,10): warning C4244:  “初始化”: 从“double”转换到“float”，可能丢失数据
-D:\Graph\FirstGraph\vector.h(126,10): warning C4244:  “初始化”: 从“double”转换到“float”，可能丢失数据
-D:\Graph\FirstGraph\material.h(24,61): warning C4244:  “参数”: 从“double”转换到“float”，可能丢失数据
-D:\Graph\FirstGraph\material.h(24,45): warning C4244:  “参数”: 从“double”转换到“float”，可能丢失数据
-D:\Graph\FirstGraph\material.h(24,29): warning C4244:  “参数”: 从“double”转换到“float”，可能丢失数据
-D:\Graph\FirstGraph\sphere.h(60,28): warning C4244:  “参数”: 从“double”转换到“float”，可能丢失数据
-D:\Graph\FirstGraph\Main.cpp(14,5): warning C4305:  “参数”: 从“double”到“float”截断
-D:\Graph\FirstGraph\Main.cpp(29,11): warning C4244:  “初始化”: 从“double”转换到“float”，可能丢失数据
-D:\Graph\FirstGraph\Main.cpp(30,15): warning C4244:  “参数”: 从“double”转换到“float”，可能丢失数据
-D:\Graph\FirstGraph\Main.cpp(30,66): warning C4305:  “参数”: 从“double”到“float”截断
-D:\Graph\FirstGraph\Main.cpp(42,78): warning C4305:  “参数”: 从“double”到“float”截断
-D:\Graph\FirstGraph\Main.cpp(43,77): warning C4305:  “参数”: 从“double”到“float”截断
-D:\Graph\FirstGraph\Main.cpp(44,73): warning C4305:  “参数”: 从“double”到“float”截断
-D:\Graph\FirstGraph\Main.cpp(45,74): warning C4305:  “参数”: 从“double”到“float”截断
-D:\Graph\FirstGraph\Main.cpp(61,11): warning C4244:  “初始化”: 从“float”转换到“int”，可能丢失数据
-D:\Graph\FirstGraph\Main.cpp(62,11): warning C4244:  “初始化”: 从“float”转换到“int”，可能丢失数据
-D:\Graph\FirstGraph\Main.cpp(63,11): warning C4244:  “初始化”: 从“float”转换到“int”，可能丢失数据
-  FirstGraph.vcxproj -> D:\Graph\FirstGraph\Debug\FirstGraph.exe
+D:\Graph\RayTracing\vector.h(46): warning C4244: “初始化”: 从“double”转换到“float”，可能丢失数据
+D:\Graph\RayTracing\vector.h(126): warning C4244: “初始化”: 从“double”转换到“float”，可能丢失数据
+D:\Graph\RayTracing\random.h(19): warning C4244: “参数”: 从“double”转换到“float”，可能丢失数据
+D:\Graph\RayTracing\random.h(26): warning C4244: “参数”: 从“double”转换到“float”，可能丢失数据
+D:\Graph\RayTracing\camera.h(15): warning C4244: “初始化”: 从“double”转换到“float”，可能丢失数据
+D:\Graph\RayTracing\material.h(12): warning C4244: “初始化”: 从“double”转换到“float”，可能丢失数据
+D:\Graph\RayTracing\material.h(89): warning C4244: “=”: 从“double”转换到“float”，可能丢失数据
+D:\Graph\RayTracing\sphere.h(60): warning C4244: “参数”: 从“double”转换到“float”，可能丢失数据
+D:\Graph\RayTracing\Main.cpp(14): warning C4305: “参数”: 从“double”到“float”截断
+D:\Graph\RayTracing\Main.cpp(29): warning C4244: “初始化”: 从“double”转换到“float”，可能丢失数据
+D:\Graph\RayTracing\Main.cpp(30): warning C4244: “参数”: 从“double”转换到“float”，可能丢失数据
+D:\Graph\RayTracing\Main.cpp(30): warning C4305: “参数”: 从“double”到“float”截断
+D:\Graph\RayTracing\Main.cpp(48): warning C4305: “参数”: 从“double”到“float”截断
+D:\Graph\RayTracing\Main.cpp(49): warning C4305: “参数”: 从“double”到“float”截断
+D:\Graph\RayTracing\Main.cpp(50): warning C4305: “参数”: 从“double”到“float”截断
+D:\Graph\RayTracing\Main.cpp(52): warning C4305: “参数”: 从“double”到“float”截断
+D:\Graph\RayTracing\Main.cpp(68): warning C4244: “初始化”: 从“float”转换到“int”，可能丢失数据
+D:\Graph\RayTracing\Main.cpp(69): warning C4244: “初始化”: 从“float”转换到“int”，可能丢失数据
+D:\Graph\RayTracing\Main.cpp(70): warning C4244: “初始化”: 从“float”转换到“int”，可能丢失数据
+  FirstGraph.vcxproj -> D:\Graph\RayTracing\Debug\FirstGraph.exe
