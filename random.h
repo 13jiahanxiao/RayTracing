@@ -6,10 +6,11 @@
 
 double RandomDouble()
 {
-	static std::uniform_real_distribution<double> distribution(0, 1);
+	/*static std::uniform_real_distribution<double> distribution(0, 1);
 	static std::mt19937 generator;
 	static std::function<double()> randGenerator = std::bind(distribution, generator);
-	return randGenerator();
+	return randGenerator();*/
+	return rand() / (RAND_MAX + 1.0);
 }
 
 Vec3 RandomFlect()

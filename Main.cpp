@@ -9,29 +9,20 @@
 
 
 Hittable* RandomScene() {
-	int n = 20;
+	int n = 30;
 	Hittable** list = new Hittable * [n + 1];
 	list[0] = new Sphere(Vec3(0, -1000, 0), 1000, new Lambertian(Vec3(0.5, 0.5, 0.5)));
 	int i = 1;
-	for (int a = -3; a <3; a+=2) {
-		for (int b = -3; b < 3; b+=2) {
+	for (int a = -5; a <8; a+=3) {
+		for (int b = -5; b < 8; b+=3) {
 			float chooseMat = RandomDouble();
 			Vec3 center(a + 0.9 * RandomDouble(), 0.2, b + 0.9 * RandomDouble());
 			if ((center - Vec3(4, 0.2, 0)).Length() > 0.9) {
 				if (chooseMat < 0.8) {  // diffuse
-					list[i++] = new Sphere(center, 0.2,
-						new Lambertian(Vec3(RandomDouble() * RandomDouble(),
-							RandomDouble() * RandomDouble(),
-							RandomDouble() * RandomDouble())
-						)
-					);
+					list[i++] = new Sphere(center, 0.2,new Lambertian(Vec3(RandomDouble() * RandomDouble(),RandomDouble() * RandomDouble(),RandomDouble() * RandomDouble())));
 				}
 				else if (chooseMat < 0.95) { // metal
-					list[i++] = new Sphere(center, 0.2,
-						new Metal(Vec3(0.5 * (1 + RandomDouble()),
-							0.5 * (1 + RandomDouble()),
-							0.5 * (1 + RandomDouble())),
-							0.5 * RandomDouble()));
+					list[i++] = new Sphere(center, 0.2,	new Metal(Vec3(0.5 * (1 + RandomDouble()),0.5 * (1 + RandomDouble()),0.5 * (1 + RandomDouble())),0.5 * RandomDouble()));
 				}
 				else {  // glass
 					list[i++] = new Sphere(center, 0.2, new Dielectric(1.5));
@@ -44,6 +35,7 @@ Hittable* RandomScene() {
 	list[i++] = new Sphere(Vec3(-4, 1, 0), 1.0, new Lambertian(Vec3(0.4, 0.2, 0.1)));
 	list[i++] = new Sphere(Vec3(4, 1, 0), 1.0, new Metal(Vec3(0.7, 0.6, 0.5), 0.0));
 	return new HittableList(list, i);
+	printf_s("%d\n", i);
 }
 
 Vec3 Color(const Ray& r, Hittable* world, int depth)
@@ -71,8 +63,8 @@ Vec3 Color(const Ray& r, Hittable* world, int depth)
 
 int main()
 {
-	int nx = 800;
-	int ny = 600;
+	int nx = 1200;
+	int ny = 800;
 	int ns = 100;
 	Vec3 lookfrom(13, 2, 3);
 	Vec3 lookat(0, 0, 0);
