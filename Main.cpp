@@ -35,7 +35,6 @@ Hittable* RandomScene() {
 	list[i++] = new Sphere(Vec3(-4, 1, 0), 1.0, new Lambertian(Vec3(0.4, 0.2, 0.1)));
 	list[i++] = new Sphere(Vec3(4, 1, 0), 1.0, new Metal(Vec3(0.7, 0.6, 0.5), 0.0));
 	return new HittableList(list, i);
-	printf_s("%d\n", i);
 }
 
 Vec3 Color(const Ray& r, Hittable* world, int depth)
@@ -72,7 +71,6 @@ int main()
 	float aperture = 0.1;
 
 	Camera cam(lookfrom, lookat, Vec3(0, 1, 0), 20,	float(nx) / float(ny), aperture, distToFocus);
-
 	Hittable* world = RandomScene();
 	std::ofstream Outfile("MyTest.txt", std::ios::out);
 	Outfile << "P3\n" << nx << " " << ny << "\n255\n";

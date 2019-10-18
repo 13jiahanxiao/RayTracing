@@ -67,21 +67,18 @@ public:
 class Dielectric : public Material {
 public:
 	Dielectric(float ri) : refIdx(ri) {}
-	virtual bool Scatter(const Ray& r_in, const HitRecord& rec,
-		Vec3& attenuation, Ray& scattered) const {
+	virtual bool Scatter(const Ray& r_in, const HitRecord& rec,Vec3& attenuation, Ray& scattered) const {
 		Vec3 outwardNormal;
 		Vec3 reflected = Reflect(r_in.Direction(), rec.normal);
 		float ratio;
-		attenuation = Vec3(1.0, 1.0, 0.0);
+		attenuation = Vec3(1.0, 1.0, 1.0);
 		Vec3 refracted;
-
 		float reflectProb;
 		float cosine;
-
 		if (dot(r_in.Direction(), rec.normal) > 0) {
 			outwardNormal = -rec.normal;
 			ratio = refIdx;
-			cosine = refIdx * dot(r_in.Direction(), rec.normal)
+			cosine = /*refIdx **/ dot(r_in.Direction(), rec.normal)
 				/ r_in.Direction().Length();
 		}
 		else {
@@ -90,7 +87,6 @@ public:
 			cosine = -dot(r_in.Direction(), rec.normal)
 				/ r_in.Direction().Length();
 		}
-
 		if (Refract(r_in.Direction(), outwardNormal, ratio, refracted)) {
 			reflectProb = schlick(cosine, refIdx);
 		}
@@ -104,10 +100,8 @@ public:
 		else {
 			scattered = Ray(rec.p, refracted);
 		}
-
 		return true;
 	}
-
 	float refIdx;
 };
 #endif
