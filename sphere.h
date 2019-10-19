@@ -3,6 +3,54 @@
 
 #include"hittable.h"
 
+int BoxXCompare(const void* a, const void* b)
+{
+	AABB leftBox, rightBox;
+	Hittable* lb = *(Hittable * *)a;
+	Hittable* rb = *(Hittable * *)b;
+	if (!lb->BoundingBox(0, 0, leftBox) || !rb->BoundingBox(0, 0, rightBox))
+		std::cerr << "no bounding box in BVHNode constructor \n";
+	if (leftBox.Min().x() - rightBox.Min().x() < 0)
+	{
+		return -1;
+	}
+	else
+	{
+		return 1;
+	}
+}
+int BoxYCompare(const void* a, const void* b)
+{
+	AABB leftBox, rightBox;
+	Hittable* lb = *(Hittable * *)a;
+	Hittable* rb = *(Hittable * *)b;
+	if (!lb->BoundingBox(0, 0, leftBox) || !rb->BoundingBox(0, 0, rightBox))
+		std::cerr << "no bounding box in BVHNode constructor \n";
+	if (leftBox.Min().y() - rightBox.Min().y() < 0)
+	{
+		return -1;
+	}
+	else
+	{
+		return 1;
+	}
+}
+int BoxZCompare(const void* a, const void* b)
+{
+	AABB leftBox, rightBox;
+	Hittable* lb = *(Hittable * *)a;
+	Hittable* rb = *(Hittable * *)b;
+	if (!lb->BoundingBox(0, 0, leftBox) || !rb->BoundingBox(0, 0, rightBox))
+		std::cerr << "no bounding box in BVHNode constructor \n";
+	if (leftBox.Min().z() - rightBox.Min().z() < 0)
+	{
+		return -1;
+	}
+	else
+	{
+		return 1;
+	}
+}
 
 class Sphere :public Hittable
 {
@@ -91,11 +139,10 @@ bool HittableList::BoundingBox(float t0,float t1,AABB & box)const
 	return true;
 }
 
-class BVHNode 
-{
+class BVHNode :public Hittable{
 public:
 	BVHNode() {}
-	BVHNode(Hittable ** l,int n ,float t0,float t1) {}
+	BVHNode(Hittable** l, int n, float t0, float t1);
 
 	virtual bool Hit(const Ray& r, float min, float max, HitRecord& hitRecord) const;
 	virtual bool BoundingBox(float t0, float t1, AABB& b)const;
@@ -104,6 +151,27 @@ public:
 	Hittable* right;
 	AABB box;
 };
+BVHNode::BVHNode(Hittable** l, int n, float t0, float t1)
+{
+	int anix = int(3 * RandomDouble());
+	if (anix == 0) qsort(l, n, sizeof(Hittable*), BoxXCompare);
+	else if (anix == 1)qsort(l, n, sizeof(Hittable*), BoxYCompare);
+	else qsort(l, n, sizeof(Hittable*), BoxZCompare);
+
+	if (n == 1) { left = right = l[0]; }
+	else if (n == 2) { left = l[0], right = l[1]; }
+	else
+	{
+		left = new BVHNode(l, n / 2, t0, t1);
+		right = new BVHNode(l + n / 2, n - n / 2, t0, t1);
+	}
+	AABB boxLeft, boxRight;
+	if (!left->BoundingBox(t0, t1, boxLeft) || !right->BoundingBox(t0, t1, boxRight))
+	{
+		std::cerr << "no bounding box in BVHNode constructor \n";
+	}
+	box = SurrondBox(boxLeft, boxRight);
+}
 bool BVHNode::Hit(const Ray& r, float min, float max, HitRecord& hitRecord)const 
 {
 	if (box.Hit(r, min, max))
@@ -116,25 +184,27 @@ bool BVHNode::Hit(const Ray& r, float min, float max, HitRecord& hitRecord)const
 			if (leftRecord.t < rightRecord.t)
 				hitRecord = leftRecord;
 			else hitRecord = rightRecord;
+			return true;
 		}
 		else if (hitLeft)
 		{
 			hitRecord = leftRecord;
+			return true;;
 		}
 		else if (hitRight)
 		{
 			hitRecord = rightRecord;
+			return true;
 		}
-		else return false;
+		else 
+			return false;
 	}
-	else return false;
-	return true;
-
+    return false;
 }
-
 bool BVHNode::BoundingBox(float t0, float t1, AABB& b)const
 {
 	b = box;
 	return true;
 }
+
 #endif

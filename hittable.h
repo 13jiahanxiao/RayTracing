@@ -6,6 +6,7 @@
 #include"bvh.h"
 
 class Material;
+class AABB;
 
 struct  HitRecord
 {

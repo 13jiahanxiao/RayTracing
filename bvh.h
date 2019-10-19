@@ -6,7 +6,11 @@ class AABB
 {
 public:
 	AABB() {}
-	AABB(const Vec3& a, const Vec3& b) {}
+	AABB(const Vec3& a, const Vec3& b) 
+	{
+		min = a;
+		max = b;
+	}
 
 	Vec3 Min() const { return min; }
 	Vec3 Max() const { return max; }

@@ -34,7 +34,7 @@ Hittable* RandomScene() {
 	list[i++] = new Sphere(Vec3(0, 1, 0), 1.0, new Dielectric(1.5));
 	list[i++] = new Sphere(Vec3(-4, 1, 0), 1.0, new Lambertian(Vec3(0.4, 0.2, 0.1)));
 	list[i++] = new Sphere(Vec3(4, 1, 0), 1.0, new Metal(Vec3(0.7, 0.6, 0.5), 0.0));
-	return new HittableList(list, i);
+	return new BVHNode(list, i, 0, 1);
 }
 
 Vec3 Color(const Ray& r, Hittable* world, int depth)
@@ -43,7 +43,7 @@ Vec3 Color(const Ray& r, Hittable* world, int depth)
 	if (world->Hit(r, 0.001, FLT_MAX, temp)) {
 		Vec3 attenuation;
 		Ray scatter;
-		if (depth < 50 && temp.material->Scatter(r, temp, attenuation, scatter))
+		if (depth < 10 && temp.material->Scatter(r, temp, attenuation, scatter))
 		{
 			return attenuation * Color(scatter, world, depth + 1);
 		}
@@ -62,13 +62,13 @@ Vec3 Color(const Ray& r, Hittable* world, int depth)
 
 int main()
 {
-	int nx = 1200;
-	int ny = 800;
-	int ns = 100;
+	int nx = 800;
+	int ny = 400;
+	int ns = 50;
 	Vec3 lookfrom(13, 2, 3);
 	Vec3 lookat(0, 0, 0);
 	float distToFocus = 10;
-	float aperture = 0.1;
+	float aperture = 0.0;
 
 	Camera cam(lookfrom, lookat, Vec3(0, 1, 0), 20,	float(nx) / float(ny), aperture, distToFocus);
 	Hittable* world = RandomScene();
