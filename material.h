@@ -5,6 +5,7 @@
 #include "ray.h"
 #include"hittable.h"
 #include "random.h"
+#include"texture.h"
 
 bool Refract(const Vec3& v, const Vec3& n, float ratio, Vec3& refracted) {
 	Vec3 uv = UnitVector(v);
@@ -38,15 +39,15 @@ public:
 class Lambertian :public Material
 {
 public:
-	Lambertian(const Vec3& b) :albedo(b) {}
+	Lambertian(Texture* b) :albedo(b) {}
 	virtual bool Scatter(const Ray& in, const HitRecord& record, Vec3& attenuation, Ray& scatter)const
 	{
 		Vec3 target = record.p + record.normal + RandomFlect();
 		scatter = Ray(record.p, target - record.p);
-		attenuation = albedo;
+		attenuation = albedo->Value(0,0,record.p);
 		return true;
 	}
-	Vec3 albedo;
+	Texture * albedo;
 };
 
 class Metal :public Material

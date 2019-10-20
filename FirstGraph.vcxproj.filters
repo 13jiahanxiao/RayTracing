@@ -30,13 +30,16 @@
     <ClInclude Include="camera.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="sphere.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
     <ClInclude Include="random.h">
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="bvh.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="texture.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="geometry.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>
