@@ -38,6 +38,15 @@ Hittable* RandomScene() {
 	return new BVHNode(list, i, 0, 1);
 }
 
+Hittable* PerlinScene() 
+{
+	Texture* per = new NoiseTexture(3);
+	Hittable ** l = new Hittable * [2];
+	l[0] = new Sphere(Vec3(0, -1000, 0), 1000, new Lambertian(per));
+	l[1] = new Sphere(Vec3(0, 2, 0), 2, new Lambertian(per));
+	return new HittableList(l, 2);
+}
+
 Vec3 Color(const Ray& r, Hittable* world, int depth)
 {
 	HitRecord temp;
@@ -72,7 +81,7 @@ int main()
 	float aperture = 0.0;
 
 	Camera cam(lookfrom, lookat, Vec3(0, 1, 0), 20,	float(nx) / float(ny), aperture, distToFocus);
-	Hittable* world = RandomScene();
+	Hittable* world = PerlinScene();
 	std::ofstream Outfile("MyTest.txt", std::ios::out);
 	Outfile << "P3\n" << nx << " " << ny << "\n255\n";
 	for (int j = ny - 1; j >= 0; j--)
@@ -87,9 +96,9 @@ int main()
 			}
 			color /= float(ns);
 			color = Vec3(sqrt(color[0]), sqrt(color[1]), sqrt(color[2]));
-			int ir = (int)255.99 * color[0];
-			int ig = (int)255.99 * color[1];
-			int ib = (int)255.99 * color[2];
+			int ir = int(255.99 * color[0]);
+			int ig = int(255.99 * color[1]);
+			int ib = int(255.99 * color[2]);
 			Outfile << ir << " " << ig << " " << ib << "\n";
 		}
 	Outfile.close();

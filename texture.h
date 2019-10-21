@@ -2,6 +2,7 @@
 #define TEXTUREH
 
 #include"vector.h"
+#include"noise.h"
 
 class Texture 
 {
@@ -21,10 +22,11 @@ public:
 
 	Vec3 color;
 };
+
 class TestTexture :public Texture 
 {
 public :
-	TestTexture();
+	TestTexture() {};
 	TestTexture(Texture * a,Texture * b) :odd(a),even(b) {};
 	virtual Vec3 Value(float u, float v, const Vec3& p)const  
 	{
@@ -37,5 +39,15 @@ public :
 	Texture* even;
 };
 
-#endif // !TEXTUREH
+class NoiseTexture :public Texture
+{
+public:
+	NoiseTexture() {};
+	NoiseTexture(float sc) :scale(sc) {};
+	virtual Vec3 Value(float u, float v, const Vec3& p)const { return Vec3(1, 1, 1) * 0.5 * (1 + sin(scale * p.z() + 10 * noise.Turb(p))); };
 
+	Perlin noise;
+	float scale;
+};
+
+#endif // !TEXTUREH

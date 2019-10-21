@@ -102,7 +102,7 @@ public:
 	HittableList() {};
 	HittableList(Hittable** l, int s) { list = l; size = s; };
 	virtual bool Hit(const Ray& r, float min, float max, HitRecord& hitRecord)const;
-	virtual bool BoundingBox(float t0, float t1, AABB& box)const = 0;
+	virtual bool BoundingBox(float t0, float t1, AABB& box)const ;
 	Hittable** list;
 	int size;
 };
