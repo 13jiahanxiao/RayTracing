@@ -4,7 +4,7 @@
 #include"vector.h"
 #include"random.h"
 
-float TrilinearInterp(Vec3 c[2][2][2], float u, float v,float w)
+float TrilinearInterp(Vector3 c[2][2][2], float u, float v,float w)
 {
 	float uu = u * u * (3 - 2 * u);
 	float vv = v * v * (3 - 2 * v);
@@ -14,7 +14,7 @@ float TrilinearInterp(Vec3 c[2][2][2], float u, float v,float w)
 		for(int j=0;j<2;j++)
 			for (int k = 0; k < 2; k++)
 			{
-				Vec3 weightV(u - i, v - j, w - k);
+				Vector3 weightV(u - i, v - j, w - k);
 				accum += (i * uu + (1 - i) * (1 - uu)) * (j * vv + (1 - j) * (1 - vv)) * (k * ww + (1 - k) * (1 - ww)) * dot(c[i][j][k], weightV);
 			}
 	return accum;
@@ -23,7 +23,7 @@ float TrilinearInterp(Vec3 c[2][2][2], float u, float v,float w)
 class Perlin
 {
 public :
-	float Noise(const Vec3& p) const
+	float Noise(const Vector3& p) const
 	{
 		float u = p.x() - floor(p.x());
 		float v = p.y() - floor(p.y());
@@ -33,17 +33,17 @@ public :
 		int j =floor(p.y());
 		int k =floor(p.z());
 
-		Vec3 c[2][2][2];
+		Vector3 c[2][2][2];
 		for (int di = 0; di < 2; di++)
 			for (int dj = 0; dj < 2; dj++)
 				for (int dk = 0; dk < 2; dk++)
 					c[di][dj][dk] = ranVec[permuteX[(i + di) & 255] ^permuteY[(j + dj) & 255] ^permuteZ[(k + dk) & 255]];
 		return TrilinearInterp(c, u, v, w);
 	}
-	float Turb(const Vec3& p, int depth = 7)const
+	float Turb(const Vector3& p, int depth = 7)const
 	{
 		float accum = 0.0f;
-		Vec3 temp = p;
+		Vector3 temp = p;
 		float weight = 1.0f;
 		for (int i = 0; i < depth; i++)
 		{
@@ -55,16 +55,16 @@ public :
 		return fabs(accum);
 	}
 
-	static Vec3* ranVec;
+	static Vector3* ranVec;
 	static int* permuteX;
 	static int* permuteY;
 	static int* permuteZ;
 };
-static Vec3* PerlinGenerate() 
+static Vector3* PerlinGenerate() 
 {
-	Vec3* p = new Vec3[256];
+	Vector3* p = new Vector3[256];
 	for (int i = 0; i < 256; i++) {
-		p[i] = UnitVector(Vec3(2 * RandomDouble() - 1, 2 * RandomDouble() - 1, 2 * RandomDouble() - 1));
+		p[i] = UnitVector(Vector3(2 * RandomDouble() - 1, 2 * RandomDouble() - 1, 2 * RandomDouble() - 1));
 	}
 	return p;
 }
@@ -89,7 +89,7 @@ static int* PerlinGeneratePermute()
 	return p;
 }
 
-Vec3* Perlin::ranVec = PerlinGenerate();
+Vector3* Perlin::ranVec = PerlinGenerate();
 int* Perlin::permuteX = PerlinGeneratePermute();
 int* Perlin::permuteY = PerlinGeneratePermute();
 int* Perlin::permuteZ = PerlinGeneratePermute();

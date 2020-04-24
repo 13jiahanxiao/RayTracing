@@ -9,8 +9,11 @@
 class Camera
 {
 public:
-	Camera(Vec3 lookfrom, Vec3 lookat, Vec3 vup, float vfov, float aspect,float aperture,float focusDistance) {
+	Camera();
+	Camera(Vector3 lookfrom, Vector3 lookat, Vector3 vup, float vfov, float aspect,float aperture,float focusDistance,float t0,float t1) {
 
+		time0 = t0;
+		time1 = t1;
 		lensRadius = aperture / 2;
 		float theta = vfov * M_PI / 180;
 		float halfHeight = tan(theta / 2);
@@ -27,15 +30,17 @@ public:
 
 	Ray GetRay(float s, float t)
 	{
-		Vec3 rd = lensRadius * RandomInUnitDisk();
-		Vec3 offset = u * rd.x() + v * rd.y();
-		return Ray(origin+offset,  UnitVector (lowerLeftCorner + s * horizontal + t * vertical-origin-offset)); 
+		Vector3 rd = lensRadius * RandomInUnitDisk();
+		Vector3 offset = u * rd.x() + v * rd.y();
+		float time = time0 + RandomDouble() * (time1 - time0);
+		return Ray(origin+offset,  UnitVector (lowerLeftCorner + s * horizontal + t * vertical-origin-offset),time); 
 	}
-	Vec3 lowerLeftCorner;
-	Vec3 horizontal;
-	Vec3 vertical;
-	Vec3 origin;
-	Vec3 u, v, w;
+	Vector3 lowerLeftCorner;
+	Vector3 horizontal;
+	Vector3 vertical;
+	Vector3 origin;
+	Vector3 u, v, w;
 	float lensRadius;
+	float time0, time1;
 };
 #endif

@@ -6,14 +6,14 @@ class AABB
 {
 public:
 	AABB() {}
-	AABB(const Vec3& a, const Vec3& b) 
+	AABB(const Vector3& a, const Vector3& b) 
 	{
 		min = a;
 		max = b;
 	}
 
-	Vec3 Min() const { return min; }
-	Vec3 Max() const { return max; }
+	Vector3 Min() const { return min; }
+	Vector3 Max() const { return max; }
 	bool Hit (const Ray& r, float tMin, float tMax) const
 	{
 		for  (int i = 0; i <3 ; i++)
@@ -35,19 +35,19 @@ public:
 		return true;
 	}
 
-	Vec3 min;
-	Vec3 max;
+	Vector3 min;
+	Vector3 max;
 };
 
 AABB SurrondBox(AABB b1, AABB b2) 
 {
-	Vec3 small
+	Vector3 small
 	{
 		std::fmin(b1.Min().x(),b2.Min().x()),
 		std::fmin(b1.Min().y(),b2.Min().y()),
 		std::fmin(b1.Min().z(),b2.Min().z())
 	};
-	Vec3 big
+	Vector3 big
 	{
 		std::fmax(b1.Max().x(),b2.Max().x()),
 		std::fmax(b1.Max().y(),b2.Max().y()),

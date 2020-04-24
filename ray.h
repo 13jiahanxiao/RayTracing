@@ -7,14 +7,14 @@ class Ray
 {
 public:
 	Ray() {}
-	Ray(const Vec3& a, const Vec3& b, float t = 0) { A = a; B = b; time = 0; }
+	Ray(const Vector3& a, const Vector3& b, float t = 0) { A = a; B = b; time = 0; }
 	float Time() const{ return time; }
-	Vec3 Origin() const { return A; }
-	Vec3 Direction() const { return B; }
-	Vec3 PointAtParameter(float t)const { return A + t * B; }
+	Vector3 Origin() const { return A; }
+	Vector3 Direction() const { return B; }
+	Vector3 PointAtParameter(float t)const { return A + t * B; }
 
-	Vec3 A;
-	Vec3 B;
+	Vector3 A;
+	Vector3 B;
 	float time;
 };
 #endif

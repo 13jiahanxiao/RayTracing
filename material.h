@@ -7,8 +7,8 @@
 #include "random.h"
 #include"texture.h"
 
-bool Refract(const Vec3& v, const Vec3& n, float ratio, Vec3& refracted) {
-	Vec3 uv = UnitVector(v);
+bool Refract(const Vector3& v, const Vector3& n, float ratio, Vector3& refracted) {
+	Vector3 uv = UnitVector(v);
 	float dt = dot(uv, n);
 	float discriminant = 1.0 - ratio * ratio * (1 - dt * dt);
 	if (discriminant > 0) {
@@ -19,7 +19,7 @@ bool Refract(const Vec3& v, const Vec3& n, float ratio, Vec3& refracted) {
 		return false;
 }
 
-Vec3 Reflect(const Vec3& v, const Vec3& n)
+Vector3 Reflect(const Vector3& v, const Vector3& n)
 {
 	return v - 2 * dot(v, n) * n;
 }
@@ -33,18 +33,23 @@ float schlick(float cosine, float refIdx) {
 class Material
 {
 public:
-	virtual bool Scatter(const Ray& in, const HitRecord& record, Vec3& attenuation, Ray& scatter)const = 0;
+	virtual bool Scatter(const Ray& in, const HitRecord& record, Vector3& attenuation, Ray& scatter)const = 0;
+	virtual Vector3 Emitted(float u, float v, const Vector3& p)const 
+	{
+		return Vector3(0, 0, 0);
+	}
+
 };
 
 class Lambertian :public Material
 {
 public:
 	Lambertian(Texture* b) :albedo(b) {}
-	virtual bool Scatter(const Ray& in, const HitRecord& record, Vec3& attenuation, Ray& scatter)const
+	virtual bool Scatter(const Ray& in, const HitRecord& record, Vector3& attenuation, Ray& scatter)const
 	{
-		Vec3 target = record.p + record.normal + RandomFlect();
+		Vector3 target = record.p + record.normal + RandomFlect();
 		scatter = Ray(record.p, target - record.p);
-		attenuation = albedo->Value(0,0,record.p);
+		attenuation = albedo->Value(record.u,record.v,record.p);
 		return true;
 	}
 	Texture * albedo;
@@ -53,27 +58,27 @@ public:
 class Metal :public Material
 {
 public:
-	Metal(const Vec3& a,float f) :albedo(a) { if (f < 1) fuzz = f; else fuzz = 1; }
-	virtual bool Scatter(const Ray& in, const HitRecord& record, Vec3& attenuation, Ray& scatter) const
+	Metal(const Vector3& a,float f) :albedo(a) { if (f < 1) fuzz = f; else fuzz = 1; }
+	virtual bool Scatter(const Ray& in, const HitRecord& record, Vector3& attenuation, Ray& scatter) const
 	{
-		Vec3 reflect = Reflect(UnitVector(in.Direction()), record.normal);
+		Vector3 reflect = Reflect(UnitVector(in.Direction()), record.normal);
 		scatter = Ray(record.p, reflect);
 		attenuation = albedo;
 		return (dot(scatter.Direction(), record.normal) > 0);
 	}
-	Vec3 albedo;
+	Vector3 albedo;
 	float fuzz;
 };
 
 class Dielectric : public Material {
 public:
 	Dielectric(float ri) : refIdx(ri) {}
-	virtual bool Scatter(const Ray& r_in, const HitRecord& rec,Vec3& attenuation, Ray& scattered) const {
-		Vec3 outwardNormal;
-		Vec3 reflected = Reflect(r_in.Direction(), rec.normal);
+	virtual bool Scatter(const Ray& r_in, const HitRecord& rec,Vector3& attenuation, Ray& scattered) const {
+		Vector3 outwardNormal;
+		Vector3 reflected = Reflect(r_in.Direction(), rec.normal);
 		float ratio;
-		attenuation = Vec3(1.0, 1.0, 1.0);
-		Vec3 refracted;
+		attenuation = Vector3(1.0, 1.0, 1.0);
+		Vector3 refracted;
 		float reflectProb;
 		float cosine;
 		if (dot(r_in.Direction(), rec.normal) > 0) {
@@ -104,5 +109,33 @@ public:
 		return true;
 	}
 	float refIdx;
+};
+
+class DiffuseLight :public Material 
+{
+public :
+	DiffuseLight(Texture* a):emit(a) {}
+	virtual bool Scatter(const Ray& r_in, const HitRecord& rec,Vector3& attenuation,Ray&scatter)const 
+	{
+		return false;
+	}
+	virtual Vector3 Emitted(float u, float v, const Vector3& p)const 
+	{
+		return emit->Value(u, v, p);
+	}
+	Texture* emit;
+};
+
+class Isotropic :public Material 
+{
+public:
+	Isotropic(Texture* a) :albedo(a) {}
+	virtual bool Scatter(const Ray& rIn, const HitRecord& rec, Vector3& attenuation, Ray& scatter)const
+	{
+		scatter = Ray(rec.p,RandomFlect());
+		attenuation = albedo->Value(rec.u, rec.v, rec.p);
+		return true;
+	}
+	Texture* albedo;
 };
 #endif
