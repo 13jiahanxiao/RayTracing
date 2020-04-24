@@ -67,13 +67,19 @@ Hittable* PerlinScene()
 
 Hittable* Light() 
 {
-	Texture* per = new NoiseTexture(4);
-	Hittable** l = new Hittable * [4];
-	l[0] = new Sphere(Vector3(0, -1000, 0), 1000, new Lambertian(per));
-	l[1] = new Sphere(Vector3(0, 2, 0), 2, new Lambertian(per));
-	l[2] = new Sphere(Vector3(0, 7, 0), 2, new DiffuseLight(new ConstantTexture(Vector3(4,4,4))));
-	l[3] = new XYRect(3,5,1,3,-2, new DiffuseLight(new ConstantTexture(Vector3(4,4,4))));
-	return new HittableList(l, 4);
+	Hittable** list = new Hittable * [6];
+	Material* red = new Lambertian(new ConstantTexture(Vector3(0.65, 0.05, 0.05)));
+	Material* white = new Lambertian(new ConstantTexture(Vector3(0.73, 0.73, 0.73)));
+	Material* green = new Lambertian(new ConstantTexture(Vector3(0.12, 0.45, 0.15)));
+	Material* light = new DiffuseLight(new ConstantTexture(Vector3(15, 15, 15)));
+
+	list[0] = new FlipNormals(new YZRect(0, 555, 0, 555, 555, green));
+	list[1] = new YZRect(0, 555, 0, 555, 0, red);
+	list[2] = new XZRect(213, 343, 227, 332, 554, light);
+	list[3] = new FlipNormals(new XZRect(0, 555, 0, 555, 555, white));
+	list[4] = new XZRect(0, 555, 0, 555, 0, white);
+	list[5] = new FlipNormals(new XYRect(0, 555, 0, 555, 555, white));
+	return new HittableList(list,6);
 }
 
 Hittable* CornellBox() 
@@ -82,7 +88,7 @@ Hittable* CornellBox()
 	Material* red = new Lambertian(new ConstantTexture(Vector3(0.65, 0.05, 0.05)));
 	Material* white = new Lambertian(new ConstantTexture(Vector3(0.73, 0.73, 0.73)));
 	Material* green = new Lambertian(new ConstantTexture(Vector3(0.12, 0.45, 0.15)));
-	Material* light = new DiffuseLight(new ConstantTexture(Vector3(20, 20, 20)));
+	Material* light = new DiffuseLight(new ConstantTexture(Vector3(15, 15, 15)));
 
 	list[0] = new FlipNormals(new YZRect (0, 555, 0, 555, 555, green));
 	list[1] = new YZRect(0, 555, 0, 555, 0, red);
@@ -98,11 +104,11 @@ Hittable* CornellBox()
 
 Hittable* CornellSmoke() 
 {
-	Hittable** list = new Hittable * [8];
+	Hittable** list = new Hittable * [7];
 	Material* red = new Lambertian(new ConstantTexture(Vector3(0.65, 0.05, 0.05)));
 	Material* white = new Lambertian(new ConstantTexture(Vector3(0.73, 0.73, 0.73)));
 	Material* green = new Lambertian(new ConstantTexture(Vector3(0.12, 0.45, 0.15)));
-	Material* light = new DiffuseLight(new ConstantTexture(Vector3(20, 20, 20)));
+	Material* light = new DiffuseLight(new ConstantTexture(Vector3(25, 25, 25)));
 
 	list[0] = new FlipNormals(new YZRect(0, 555, 0, 555, 555, green));
 	list[1] = new YZRect(0, 555, 0, 555, 0, red);
@@ -110,11 +116,9 @@ Hittable* CornellSmoke()
 	list[3] = new FlipNormals(new XZRect(0, 555, 0, 555, 555, white));
 	list[4] = new XZRect(0, 555, 0, 555, 0, white);
 	list[5] = new FlipNormals(new XYRect(0, 555, 0, 555, 555, white));
-	Hittable* b1 = new Translate(new RotateY(new Box(Vector3(0, 0, 0), Vector3(165, 165, 165), white), -18), Vector3(130, 0, 65));
-	Hittable* b2= new Translate(new RotateY(new Box(Vector3(0, 0, 0), Vector3(165, 330, 165), white), 15), Vector3(265, 0, 295));
-	list[6] = new ConstantMedium(b1, 0.01, new ConstantTexture(Vector3(1.0, 1.0, 1.0)));
-	list[7] = new ConstantMedium(b2, 0.01, new ConstantTexture(Vector3(0.0, 0.0, 0.0)));
-	return new HittableList(list, 8);
+	Hittable* b1 = new Translate(new Box(Vector3(0, 0, 0), Vector3(555, 50, 555), white),Vector3(0,50,0));
+	list[6] = new ConstantMedium(b1, 0.005, new ConstantTexture(Vector3(0.12, 0.45, 0.15)));
+	return new HittableList(list, 7);
 }
 
 Vector3 Color(const Ray& r, Hittable* world, int depth)
@@ -227,7 +231,7 @@ void Func10()
 int main()
 {
 	SetPixelData();
-	world = CornellBox();
+	world = CornellSmoke();
 
 
 	std::thread t1(Func1);
