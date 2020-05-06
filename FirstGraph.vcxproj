@@ -131,6 +131,7 @@
     <ClInclude Include="hittable.h" />
     <ClInclude Include="material.h" />
     <ClInclude Include="noise.h" />
+    <ClInclude Include="pdf.h" />
     <ClInclude Include="random.h" />
     <ClInclude Include="ray.h" />
     <ClInclude Include="geometry.h" />

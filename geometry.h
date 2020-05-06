@@ -59,6 +59,24 @@ public:
 	Sphere(Vector3 cen, float t, Material* m) :center(cen), radius(t), material(m) {}
 	virtual bool Hit(const Ray& r, float min, float max, HitRecord& hitRecord) const;
 	virtual bool BoundingBox(float t0, float t1, AABB& box)const;
+	float PDFValue(const Vector3& o, const Vector3& v)const 
+	{
+		HitRecord rec;
+		if (this->Hit(Ray(o, v), 0.001, FLT_MAX, rec)) {
+			float cosThetaMax = sqrt(1 - radius * radius / (center - o).SquaredLength());
+			float solidAngle = 2 * M_PI * (1 - cosThetaMax);
+			return  1 / solidAngle;
+		}
+		else
+			return 0;
+	}
+	Vector3 Random(const Vector3& o) const {
+		Vector3 direction = center - o;
+		float distanceSquared = direction.SquaredLength();
+		ONB uvw;
+		uvw.BuildFromW(direction);
+		return uvw.Local(RandomToSphere(radius, distanceSquared));
+	}
 	Vector3 center;
 	float radius;
 	Material* material;
@@ -103,6 +121,18 @@ public:
 	HittableList(Hittable** l, int s) { list = l; size = s; };
 	virtual bool Hit(const Ray& r, float min, float max, HitRecord& hitRecord)const;
 	virtual bool BoundingBox(float t0, float t1, AABB& box)const ;
+	float PDFValue(const Vector3& o, const Vector3& v) const {
+		float weight = 1.0 / size;
+		float sum = 0;
+		for (int i = 0; i < size; i++)
+			sum += weight * list[i]->PDFValue(o, v);
+		return sum;
+	}
+
+	Vector3 Random(const Vector3& o) const {
+		int index = int(RandomDouble() * size);
+		return list[index]->Random(o);
+	}
 	Hittable** list;
 	int size;
 };
@@ -216,7 +246,7 @@ public:
 	virtual bool BoundingBox(float t0, float t1, AABB& box) const {
 		box = AABB(Vector3(x0, y0, k - 0.0001), Vector3(x1, y1, k + 0.0001));
 		return true;
-	}
+	}	
 	Material* mp;
 	float x0, x1, y0, y1, k;
 };
@@ -246,6 +276,22 @@ public:
 	virtual bool BoundingBox(float t0, float t1, AABB& box) const {
 		box = AABB(Vector3(x0, k - 0.0001,z0), Vector3(x1,k + 0.0001,z1));
 		return true;
+	}
+	virtual float PDFValue(const Vector3& o, const Vector3& v)const
+	{
+		HitRecord rec;
+		if (this->Hit(Ray(o, v), 0.001, FLT_MAX, rec)) {
+			float area = (x1 - x0) * (z1 - z0);
+			float distanceSquared = rec.t * rec.t * v.SquaredLength();
+			float cosine = fabs(dot(v, rec.normal) / v.Length());
+			return  distanceSquared / (cosine * area);
+		}
+		else
+			return 0;
+	}
+	virtual Vector3 Random(const Vector3& o) const {
+		Vector3 randomPoint = Vector3(x0 + RandomDouble() * (x1 - x0), k,z0 + RandomDouble() * (z1 - z0));
+		return randomPoint - o;
 	}
 	Material* mp;
 	float x0, x1, z0, z1, k;
@@ -437,67 +483,67 @@ bool RotateY::Hit(const Ray& r, float t_min, float t_max, HitRecord& rec) const 
 		return false;
 }
 
-class ConstantMedium :public Hittable 
-{public:
-	ConstantMedium(Hittable* b, float d, Texture* a) :boundary(b), density(d) 
-	{
-		phaseFunction = new Isotropic(a);
-	};
-	virtual bool Hit(const Ray& r, float t_min, float t_max, HitRecord& rec) const;
-	virtual bool BoundingBox(float t0, float t1, AABB& box)const 
-	{
-		return boundary->BoundingBox(t0, t1, box);
-	};
+//class ConstantMedium :public Hittable 
+//{public:
+//	ConstantMedium(Hittable* b, float d, Texture* a) :boundary(b), density(d) 
+//	{
+//		phaseFunction = new Isotropic(a);
+//	};
+//	virtual bool Hit(const Ray& r, float t_min, float t_max, HitRecord& rec) const;
+//	virtual bool BoundingBox(float t0, float t1, AABB& box)const 
+//	{
+//		return boundary->BoundingBox(t0, t1, box);
+//	};
+//
+//	Hittable* boundary;
+//	float density;
+//	Material* phaseFunction;
+//};
 
-	Hittable* boundary;
-	float density;
-	Material* phaseFunction;
-};
-
-bool ConstantMedium::Hit(const Ray& r, float t_min, float t_max, HitRecord& rec) const
-{
-	const bool enableDebug = false;
-	bool debugging = enableDebug && RandomDouble() < 0.00001;
-
-	HitRecord rec1, rec2;
-
-	if (boundary->Hit(r, -FLT_MAX, FLT_MAX, rec1)) {
-		if (boundary->Hit(r, rec1.t + 0.0001, FLT_MAX, rec2)) {
-
-			if (debugging) std::cerr << "\nt0 t1 " << rec1.t << " " << rec2.t << '\n';
-
-			if (rec1.t < t_min)
-				rec1.t = t_min;
-
-			if (rec2.t > t_max)
-				rec2.t = t_max;
-
-			if (rec1.t >= rec2.t)
-				return false;
-
-			if (rec1.t < 0)
-				rec1.t = 0;
-
-			float distance_inside_boundary = (rec2.t - rec1.t) * r.Direction().Length();
-			float hit_distance = -(1 / density) * log(RandomDouble());
-
-			if (hit_distance < distance_inside_boundary) {
-
-				rec.t = rec1.t + hit_distance / r.Direction().Length();
-				rec.p = r.PointAtParameter(rec.t);
-
-				if (debugging) {
-					std::cerr << "hit_distance = " << hit_distance << '\n'
-						<< "rec.t = " << rec.t << '\n'
-						<< "rec.p = " << rec.p << '\n';
-				}
-
-				rec.normal = Vector3(1, 0, 0);  // arbitrary
-				rec.material = phaseFunction;
-				return true;
-			}
-		}
-	}
-	return false;
-}
+//bool ConstantMedium::Hit(const Ray& r, float t_min, float t_max, HitRecord& rec) const
+//{
+//	const bool enableDebug = false;
+//	bool debugging = enableDebug && RandomDouble() < 0.00001;
+//
+//	HitRecord rec1, rec2;
+//
+//	if (boundary->Hit(r, -FLT_MAX, FLT_MAX, rec1)) {
+//		if (boundary->Hit(r, rec1.t + 0.0001, FLT_MAX, rec2)) {
+//
+//			if (debugging) std::cerr << "\nt0 t1 " << rec1.t << " " << rec2.t << '\n';
+//
+//			if (rec1.t < t_min)
+//				rec1.t = t_min;
+//
+//			if (rec2.t > t_max)
+//				rec2.t = t_max;
+//
+//			if (rec1.t >= rec2.t)
+//				return false;
+//
+//			if (rec1.t < 0)
+//				rec1.t = 0;
+//
+//			float distance_inside_boundary = (rec2.t - rec1.t) * r.Direction().Length();
+//			float hit_distance = -(1 / density) * log(RandomDouble());
+//
+//			if (hit_distance < distance_inside_boundary) {
+//
+//				rec.t = rec1.t + hit_distance / r.Direction().Length();
+//				rec.p = r.PointAtParameter(rec.t);
+//
+//				if (debugging) {
+//					std::cerr << "hit_distance = " << hit_distance << '\n'
+//						<< "rec.t = " << rec.t << '\n'
+//						<< "rec.p = " << rec.p << '\n';
+//				}
+//
+//				rec.normal = Vector3(1, 0, 0);  // arbitrary
+//				rec.material = phaseFunction;
+//				return true;
+//			}
+//		}
+//	}
+//	return false;
+//}
 #endif
